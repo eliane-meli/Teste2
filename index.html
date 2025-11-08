@@ -108,6 +108,14 @@
             font-size: 1rem;
         }
 
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #3aa8d4;
+        }
+
         .date-filter {
             display: flex;
             gap: 10px;
@@ -394,6 +402,14 @@
             margin: 2px;
         }
 
+        .spreadsheet-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid var(--info);
+        }
+
         @media (max-width: 768px) {
             .dashboard {
                 grid-template-columns: 1fr;
@@ -458,8 +474,12 @@
             <button id="load-sample-btn" class="btn">
                 <i class="fas fa-database"></i> Dados de Exemplo
             </button>
+            <a href="https://docs.google.com/spreadsheets/d/1iLftWtEUacg6iYCzZKhChR6b5nqrNQxTz6R3lulBCro/edit?gid=0#gid=0" 
+               class="btn btn-success" target="_blank">
+                <i class="fas fa-download"></i> Baixar Planilha
+            </a>
             <button id="export-btn" class="btn">
-                <i class="fas fa-download"></i> Exportar Relatório
+                <i class="fas fa-file-export"></i> Exportar Relatório
             </button>
         </div>
         
@@ -526,12 +546,24 @@
             </div>
             
             <div class="card">
-                <h2><i class="fas fa-lightbulb"></i> Insights e Tendências - Ecommerce</h2>
+                <h2><i class="fas fa-lightbulb"></i> Insights e Tendências</h2>
                 <div id="trend-summary"></div>
                 
                 <div class="insight-card">
                     <h3><i class="fas fa-chart-line"></i> Análise Detalhada e Recomendações</h3>
                     <div id="recommendations"></div>
+                    
+                    <div class="spreadsheet-info">
+                        <h4><i class="fas fa-info-circle"></i> Sobre os Dados</h4>
+                        <p>Os dados são carregados automaticamente da planilha do Google Sheets. 
+                        Para atualizar os dados, faça o download da planilha atualizada e faça upload no dashboard.</p>
+                        <div style="margin-top: 10px;">
+                            <a href="https://docs.google.com/spreadsheets/d/1iLftWtEUacg6iYCzZKhChR6b5nqrNQxTz6R3lulBCro/edit?gid=0#gid=0" 
+                               class="btn btn-success" target="_blank" style="padding: 8px 15px; font-size: 0.9rem;">
+                                <i class="fas fa-external-link-alt"></i> Acessar Planilha Original
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -559,7 +591,7 @@
     </div>
     
     <footer>
-        <p>Dashboard de Análise de Volume - Otimizado para Ecommerce &copy; 2025</p>
+        <p>Dashboard de Análise de Volume - Conectado ao Google Sheets &copy; 2025</p>
     </footer>
 
     <script>
@@ -682,7 +714,7 @@
             allData = generateEcommerceSampleData();
             populateYearFilter();
             applyFilters();
-            updateConnectionStatus(true, 'Usando dados de exemplo de ecommerce');
+            updateConnectionStatus(true, 'Usando dados de exemplo');
         }
         
         // Gerar dados de exemplo realistas para ecommerce
@@ -1490,7 +1522,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `relatorio-ecommerce-${moment().format('DD-MM-YYYY')}.json`;
+            a.download = `relatorio-volume-${moment().format('DD-MM-YYYY')}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
