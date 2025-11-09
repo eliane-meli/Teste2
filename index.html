@@ -676,16 +676,19 @@
                 </button>
                 <input type="file" id="file-input" accept=".csv">
             </div>
-            <button id="download-report-btn" class="btn btn-success">
-                <i class="fas fa-download"></i> Baixar Relatório
-            </button>
-            <button id="whatsapp-btn" class="btn btn-whatsapp">
-                <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
-            </button>
-            <button id="email-btn" class="btn btn-email">
-                <i class="fas fa-envelope"></i> Enviar por Email
-            </button>
+            <div class="share-buttons">
+                <button id="download-btn" class="btn btn-success">
+                    <i class="fas fa-download"></i> Baixar Relatório
+                </button>
+                <button id="whatsapp-btn" class="btn btn-warning">
+                    <i class="fab fa-whatsapp"></i> Compartilhar
+                </button>
+                <button id="email-btn" class="btn btn-info">
+                    <i class="fas fa-envelope"></i> Enviar E-mail
+                </button>
+            </div>
         </div>
+        
         
         <div id="error-message" class="error" style="display: none;">
             <i class="fas fa-exclamation-triangle"></i>
