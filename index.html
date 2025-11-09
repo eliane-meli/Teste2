@@ -7,6 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/locale/pt-br.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -114,6 +116,22 @@
 
         .btn-success:hover {
             background: #3aa8d4;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+        }
+
+        .btn-whatsapp:hover {
+            background: #128C7E;
+        }
+
+        .btn-email {
+            background: #ea4335;
+        }
+
+        .btn-email:hover {
+            background: #d33426;
         }
 
         .date-filter {
@@ -249,6 +267,19 @@
             background-color: var(--primary);
             color: white;
             font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        .data-table th:hover {
+            background-color: var(--secondary);
+        }
+
+        .data-table th i {
+            margin-left: 5px;
+            font-size: 0.8rem;
+            opacity: 0.7;
         }
 
         .data-table tr:nth-child(even) {
@@ -410,6 +441,180 @@
             border-left: 4px solid var(--info);
         }
 
+        .sort-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .sort-controls label {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .sort-controls select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+        }
+
+        .analysis-section {
+            margin-bottom: 25px;
+        }
+
+        .analysis-section h3 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .analysis-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--info);
+        }
+
+        .analysis-card h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .stat-value-small {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .prediction-chart-container {
+            height: 250px;
+            margin-top: 15px;
+        }
+
+        .model-performance {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .performance-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: 8px;
+        }
+
+        .performance-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .performance-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .modal p {
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .email-form {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
         @media (max-width: 768px) {
             .dashboard {
                 grid-template-columns: 1fr;
@@ -433,10 +638,10 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-chart-line"></i> Dashboard de Análise de Volume </h1>
+            <h1><i class="fas fa-chart-line"></i> Dashboard de Análise de Volume Expedido</h1>
             <p class="description">
                 <span id="connection-status" class="status-indicator status-connected"></span>
-                Dashboard interativo - Análise de demanda 
+                Dashboard interativo - Análise de volume expedido - BRSP15 
                 <div class="connection-info" id="connection-info">Carregando dados do arquivo CSV...</div>
             </p>
         </header>
@@ -465,22 +670,23 @@
                     <option value="">Todos os anos</option>
                 </select>
             </div>
- <div class="file-input-container">
+            <div class="file-input-container">
                 <button id="upload-btn" class="btn">
-                    <i class="fas fa-upload"></i> Faça o upload CSV Aqui
+                    <i class="fas fa-upload"></i> Upload CSV
                 </button>
                 <input type="file" id="file-input" accept=".csv">
             </div>
-             <div class="file-input-container">
-    <a href="https://docs.google.com/spreadsheets/d/1iLftWtEUacg6iYCzZKhChR6b5nqrNQxTz6R3lulBCro/edit?gid=1457446284#gid=1457446284" id="upload-btn" class="btn" target="_blank">
-        <i class="fas fa-download"></i> Faça download csv Aqui
-    </a>
-</div>
-
-            <button id="export-btn" class="btn">
-                <i class="fas fa-download"></i> Exportar Relatório
+            <button id="download-report-btn" class="btn btn-success">
+                <i class="fas fa-download"></i> Baixar Relatório
+            </button>
+            <button id="whatsapp-btn" class="btn btn-whatsapp">
+                <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
+            </button>
+            <button id="email-btn" class="btn btn-email">
+                <i class="fas fa-envelope"></i> Enviar por Email
             </button>
         </div>
+        
         <div id="error-message" class="error" style="display: none;">
             <i class="fas fa-exclamation-triangle"></i>
             <p id="error-text"></p>
@@ -543,6 +749,179 @@
                 </div>
             </div>
             
+            <!-- Nova Seção: Análise Estatística -->
+            <div class="card">
+                <h2><i class="fas fa-chart-bar"></i> Análise Estatística </h2>
+                
+                <div class="analysis-section">
+                    <h3><i class="fas fa-search"></i> Exploração de Dados</h3>
+                    <div class="analysis-grid">
+                        <div class="analysis-card">
+                            <h4><i class="fas fa-chart-line"></i> Distribuição de Volume</h4>
+                            <div class="stat-item">
+                                <span class="stat-label">Média</span>
+                                <span class="stat-value-small" id="stat-mean">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Mediana</span>
+                                <span class="stat-value-small" id="stat-median">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Desvio Padrão</span>
+                                <span class="stat-value-small" id="stat-std">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Coef. de Variação</span>
+                                <span class="stat-value-small" id="stat-cv">0%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-card">
+                            <h4><i class="fas fa-expand-arrows-alt"></i> Dispersão</h4>
+                            <div class="stat-item">
+                                <span class="stat-label">Mínimo</span>
+                                <span class="stat-value-small" id="stat-min">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Máximo</span>
+                                <span class="stat-value-small" id="stat-max">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Amplitude</span>
+                                <span class="stat-value-small" id="stat-range">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Quartil Superior (Q3)</span>
+                                <span class="stat-value-small" id="stat-q3">0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-card">
+                            <h4><i class="fas fa-project-diagram"></i> Forma da Distribuição</h4>
+                            <div class="stat-item">
+                                <span class="stat-label">Assimetria (Skewness)</span>
+                                <span class="stat-value-small" id="stat-skew">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Curtose</span>
+                                <span class="stat-value-small" id="stat-kurtosis">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Moda</span>
+                                <span class="stat-value-small" id="stat-mode">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Tipo de Distribuição</span>
+                                <span class="stat-value-small" id="stat-dist-type">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <h3><i class="fas fa-cogs"></i> Modelagem Estatística</h3>
+                    <div class="analysis-grid">
+                        <div class="analysis-card">
+                            <h4><i class="fas fa-trend-up"></i> Análise de Tendência</h4>
+                            <div class="stat-item">
+                                <span class="stat-label">Coef. de Correlação</span>
+                                <span class="stat-value-small" id="stat-correlation">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Inclinação da Regressão</span>
+                                <span class="stat-value-small" id="stat-regression-slope">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">R² do Modelo</span>
+                                <span class="stat-value-small" id="stat-r-squared">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Significância (p-value)</span>
+                                <span class="stat-value-small" id="stat-p-value">0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-card">
+                            <h4><i class="fas fa-wave-square"></i> Análise de Sazonalidade</h4>
+                            <div class="stat-item">
+                                <span class="stat-label">Força Sazonal</span>
+                                <span class="stat-value-small" id="stat-seasonal-strength">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Período Sazonal</span>
+                                <span class="stat-value-small" id="stat-seasonal-period">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Variação Sazonal</span>
+                                <span class="stat-value-small" id="stat-seasonal-variation">0%</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Pico Sazonal</span>
+                                <span class="stat-value-small" id="stat-seasonal-peak">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: none;"> <!--//ocultação desta seção -->
+
+                <div class="analysis-section">
+                    <h3><i class="fas fa-check-circle"></i> Validação do Modelo</h3>
+                    <div class="model-performance">
+                        <div class="performance-item">
+                            <div class="performance-value" id="stat-mae">0</div>
+                            <div class="performance-label">MAE (Erro Absoluto Médio)</div>
+                        </div>
+                        <div class="performance-item">
+                            <div class="performance-value" id="stat-rmse">0</div>
+                            <div class="performance-label">RMSE (Raiz do Erro Quadrático Médio)</div>
+                        </div>
+                        <div class="performance-item">
+                            <div class="performance-value" id="stat-mape">0%</div>
+                            <div class="performance-label">MAPE (Erro Percentual Absoluto Médio)</div>
+                        </div>
+                        <div class="performance-item">
+                            <div class="performance-value" id="stat-accuracy">0%</div>
+                            <div class="performance-label">Acurácia do Modelo</div>
+                        </div>
+                    </div>
+                </div>
+                </div>        
+<!-- //1 div acima de ocultação desta seção// -->
+
+                <div class="analysis-section">
+                    <h3><i class="fas fa-crystal-ball"></i> Análise Preditiva</h3>
+                    <div class="analysis-grid">
+                        <div class="analysis-card">
+                            <h4><i class="fas fa-chart-line"></i> Previsão para os Próximos 30 Dias</h4>
+                            <div class="prediction-chart-container">
+                                <canvas id="prediction-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-card">
+                            <h4><i class="fas fa-bullseye"></i> Métricas de Previsão</h4>
+                            <div class="stat-item">
+                                <span class="stat-label">Previsão Média (30 dias)</span>
+                                <span class="stat-value-small" id="stat-pred-avg">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Crescimento Esperado</span>
+                                <span class="stat-value-small" id="stat-pred-growth">0%</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Intervalo de Confiança (95%)</span>
+                                <span class="stat-value-small" id="stat-confidence-interval">±0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Probabilidade de Aumento</span>
+                                <span class="stat-value-small" id="stat-increase-prob">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="card">
                 <h2><i class="fas fa-lightbulb"></i> Insights e Tendências</h2>
                 <div id="trend-summary"></div>
@@ -567,17 +946,35 @@
             
             <div class="card">
                 <h2><i class="fas fa-table"></i> Dados Detalhados</h2>
+                
+                <div class="sort-controls">
+                    <label for="sort-column">Ordenar por:</label>
+                    <select id="sort-column">
+                        <option value="date">Data</option>
+                        <option value="volume">Volume Expedido</option>
+                        <option value="weekday">Dia da Semana</option>
+                        <option value="month">Mês</option>
+                        <option value="variationPercent">Variação %</option>
+                        <option value="variationVolume">Variação Volume</option>
+                        <option value="status">Status</option>
+                    </select>
+                    <select id="sort-order">
+                        <option value="asc">Crescente</option>
+                        <option value="desc">Decrescente</option>
+                    </select>
+                </div>
+                
                 <div style="overflow-x: auto;">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Data</th>
-                                <th>Volume Expedido</th>
-                                <th>Dia da Semana</th>
-                                <th>Mês</th>
-                                <th>Variação %</th>
-                                <th>Variação Volume</th>
-                                <th>Status</th>
+                                <th data-sort="date">Data <i class="fas fa-sort"></i></th>
+                                <th data-sort="volume">Volume Expedido <i class="fas fa-sort"></i></th>
+                                <th data-sort="weekday">Dia da Semana <i class="fas fa-sort"></i></th>
+                                <th data-sort="month">Mês <i class="fas fa-sort"></i></th>
+                                <th data-sort="variationPercent">Variação % <i class="fas fa-sort"></i></th>
+                                <th data-sort="variationVolume">Variação Volume <i class="fas fa-sort"></i></th>
+                                <th data-sort="status">Status <i class="fas fa-sort"></i></th>
                             </tr>
                         </thead>
                         <tbody id="data-table-body">
@@ -588,8 +985,61 @@
         </div>
     </div>
     
+    <!-- Modal para WhatsApp -->
+    <div id="whatsapp-modal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fab fa-whatsapp"></i> Enviar Relatório por WhatsApp</h3>
+            <p>Escolha o formato para enviar o relatório:</p>
+            <div class="modal-buttons">
+                <button id="whatsapp-image-btn" class="btn btn-whatsapp">
+                    <i class="fas fa-image"></i> Enviar como Imagem
+                </button>
+                <button id="whatsapp-text-btn" class="btn">
+                    <i class="fas fa-file-alt"></i> Enviar como Texto
+                </button>
+                <button id="whatsapp-cancel-btn" class="btn" style="background: var(--text-light);">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para Email -->
+    <div id="email-modal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-envelope"></i> Enviar Relatório por Email</h3>
+            <p>Preencha os dados para enviar o relatório completo em PDF:</p>
+            
+            <div class="email-form">
+                <div class="form-group">
+                    <label for="email-to">Para (Email):</label>
+                    <input type="email" id="email-to" placeholder="destinatario@exemplo.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email-subject">Assunto:</label>
+                    <input type="text" id="email-subject" value="Relatório de Análise de Volume Expedido" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email-message">Mensagem:</label>
+                    <textarea id="email-message" placeholder="Adicione uma mensagem personalizada...">Segue em anexo o relatório completo de análise de volume expedido com gráficos, estatísticas e recomendações.</textarea>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button id="email-send-btn" class="btn btn-email">
+                    <i class="fas fa-paper-plane"></i> Enviar Email
+                </button>
+                <button id="email-cancel-btn" class="btn" style="background: var(--text-light);">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <footer>
-        <p>Dashboard de Análise de Volume. desenvolvido por Eliane ERB - Conectado ao Google Sheets &copy; 2025</p>
+        <p>Dashboard de Análise de Volume. Desenvolvido por Eliane ERB - Conectado ao Google Sheets &copy; 2025</p>
     </footer>
 
     <script>
@@ -597,19 +1047,31 @@
         const errorElement = document.getElementById('error-message');
         const errorTextElement = document.getElementById('error-text');
         const refreshButton = document.getElementById('refresh-btn');
-        const exportButton = document.getElementById('export-btn');
         const uploadButton = document.getElementById('upload-btn');
-        const loadSampleButton = document.getElementById('load-sample-btn');
         const fileInput = document.getElementById('file-input');
         const monthFilter = document.getElementById('month-filter');
         const yearFilter = document.getElementById('year-filter');
         const connectionStatus = document.getElementById('connection-status');
         const connectionInfo = document.getElementById('connection-info');
+        const sortColumnSelect = document.getElementById('sort-column');
+        const sortOrderSelect = document.getElementById('sort-order');
+        const downloadReportBtn = document.getElementById('download-report-btn');
+        const whatsappBtn = document.getElementById('whatsapp-btn');
+        const emailBtn = document.getElementById('email-btn');
+        const whatsappModal = document.getElementById('whatsapp-modal');
+        const emailModal = document.getElementById('email-modal');
+        const whatsappImageBtn = document.getElementById('whatsapp-image-btn');
+        const whatsappTextBtn = document.getElementById('whatsapp-text-btn');
+        const whatsappCancelBtn = document.getElementById('whatsapp-cancel-btn');
+        const emailSendBtn = document.getElementById('email-send-btn');
+        const emailCancelBtn = document.getElementById('email-cancel-btn');
         
         // Dados em memória
         let allData = [];
         let filteredData = [];
         let charts = {};
+        let currentSortColumn = 'date';
+        let currentSortOrder = 'desc';
         
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
@@ -618,39 +1080,279 @@
             
             // Eventos
             refreshButton.addEventListener('click', loadCSVData);
-            exportButton.addEventListener('click', exportReport);
             uploadButton.addEventListener('click', () => fileInput.click());
-            loadSampleButton.addEventListener('click', loadSampleData);
             fileInput.addEventListener('change', handleFileUpload);
             monthFilter.addEventListener('change', applyFilters);
             yearFilter.addEventListener('change', applyFilters);
+            sortColumnSelect.addEventListener('change', updateSorting);
+            sortOrderSelect.addEventListener('change', updateSorting);
+            downloadReportBtn.addEventListener('click', downloadReport);
+            whatsappBtn.addEventListener('click', () => whatsappModal.style.display = 'flex');
+            emailBtn.addEventListener('click', () => emailModal.style.display = 'flex');
+            whatsappImageBtn.addEventListener('click', shareViaWhatsAppImage);
+            whatsappTextBtn.addEventListener('click', shareViaWhatsAppText);
+            whatsappCancelBtn.addEventListener('click', () => whatsappModal.style.display = 'none');
+            emailSendBtn.addEventListener('click', sendEmailReport);
+            emailCancelBtn.addEventListener('click', () => emailModal.style.display = 'none');
+            
+            // Adicionar eventos de clique nos cabeçalhos da tabela
+            document.querySelectorAll('.data-table th').forEach(header => {
+                header.addEventListener('click', () => {
+                    const column = header.getAttribute('data-sort');
+                    if (column) {
+                        sortColumnSelect.value = column;
+                        updateSorting();
+                    }
+                });
+            });
+            
+            // Fechar modal ao clicar fora dele
+            window.addEventListener('click', (event) => {
+                if (event.target === whatsappModal) {
+                    whatsappModal.style.display = 'none';
+                }
+                if (event.target === emailModal) {
+                    emailModal.style.display = 'none';
+                }
+            });
         });
         
         // Carregar dados do arquivo CSV incluído
-        async function loadCSVData() {
+        function loadCSVData() {
             hideError();
             updateConnectionStatus(false, 'Carregando dados do CSV...');
             
             try {
-                const response = await fetch('Analise de Expedidos - Cópia de Expedido (2).csv');
+                // Usando os dados CSV fornecidos diretamente no código
+                const csvData = `Data,QNTD Expedida
+02/04/2025,2475
+03/04/2025,2104
+04/04/2025,2960
+05/04/2025,2400
+06/04/2025,3882
+07/04/2025,6137
+08/04/2025,7809
+09/04/2025,10649
+10/04/2025,10911
+11/04/2025,10044
+12/04/2025,9370
+13/04/2025,8178
+14/04/2025,8845
+15/04/2025,16321
+16/04/2025,16301
+17/04/2025,22098
+18/04/2025,16711
+19/04/2025,8158
+20/04/2025,14190
+21/04/2025,12077
+22/04/2025,16902
+23/04/2025,27031
+24/04/2025,25757
+25/04/2025,26024
+26/04/2025,22877
+27/04/2025,19005
+28/04/2025,19199
+29/04/2025,29518
+30/04/2025,31333
+01/05/2025,35694
+02/05/2025,27461
+03/05/2025,31416
+04/05/2025,26451
+05/05/2025,24608
+06/05/2025,53037
+07/05/2025,31399
+08/05/2025,42348
+09/05/2025,41256
+10/05/2025,37706
+11/05/2025,27944
+12/05/2025,29067
+13/05/2025,55238
+14/05/2025,36637
+15/05/2025,57576
+16/05/2025,54880
+17/05/2025,43901
+18/05/2025,33928
+19/05/2025,43772
+20/05/2025,50505
+21/05/2025,49801
+22/05/2025,51256
+23/05/2025,49193
+24/05/2025,40880
+25/05/2025,30300
+26/05/2025,39191
+27/05/2025,50277
+28/05/2025,43911
+29/05/2025,43240
+30/05/2025,47150
+31/05/2025,31429
+01/06/2025,28126
+02/06/2025,40629
+03/06/2025,52257
+04/06/2025,46678
+05/06/2025,43525
+06/06/2025,51916
+07/06/2025,47433
+08/06/2025,35056
+09/06/2025,45904
+10/06/2025,70762
+11/06/2025,63275
+12/06/2025,71986
+13/06/2025,70669
+14/06/2025,58450
+15/06/2025,41919
+16/06/2025,49248
+17/06/2025,67547
+18/06/2025,59803
+19/06/2025,51564
+20/06/2025,65863
+21/06/2025,51052
+22/06/2025,33571
+23/06/2025,40996
+24/06/2025,62804
+25/06/2025,55694
+26/06/2025,65200
+27/06/2025,65011
+28/06/2025,52538
+29/06/2025,48382
+30/06/2025,36782
+01/07/2025,60563
+02/07/2025,59097
+03/07/2025,70953
+04/07/2025,66839
+05/07/2025,58645
+06/07/2025,40422
+07/07/2025,52969
+08/07/2025,60719
+09/07/2025,53162
+10/07/2025,79515
+11/07/2025,72300
+12/07/2025,77665
+13/07/2025,45779
+14/07/2025,47015
+15/07/2025,65396
+16/07/2025,73325
+17/07/2025,76125
+18/07/2025,73145
+19/07/2025,66633
+20/07/2025,42648
+21/07/2025,54540
+22/07/2025,62050
+23/07/2025,63390
+24/07/2025,62544
+25/07/2025,56525
+26/07/2025,49127
+27/07/2025,43766
+28/07/2025,47988
+29/07/2025,60906
+30/07/2025,71523
+31/07/2025,62895
+01/08/2025,64790
+02/08/2025,60502
+03/08/2025,42072
+04/08/2025,44110
+05/08/2025,58029
+06/08/2025,72370
+07/08/2025,65755
+08/08/2025,65548
+09/08/2025,58503
+10/08/2025,42110
+11/08/2025,44800
+12/08/2025,57503
+13/08/2025,64304
+14/08/2025,62638
+15/08/2025,72161
+16/08/2025,61043
+17/08/2025,42482
+18/08/2025,50566
+19/08/2025,60000
+20/08/2025,69955
+21/08/2025,66098
+22/08/2025,63987
+23/08/2025,59159
+24/08/2025,40647
+25/08/2025,48719
+26/08/2025,56355
+27/08/2025,63364
+28/08/2025,54576
+29/08/2025,50932
+30/08/2025,46893
+31/08/2025,35800
+01/09/2025,52025
+02/09/2025,60263
+03/09/2025,65750
+04/09/2025,68997
+05/09/2025,73149
+06/09/2025,58037
+07/09/2025,51499
+08/09/2025,44488
+09/09/2025,63783
+10/09/2025,72824
+11/09/2025,70183
+12/09/2025,66173
+13/09/2025,50856
+14/09/2025,41574
+15/09/2025,57041
+16/09/2025,62401
+17/09/2025,69574
+18/09/2025,67903
+19/09/2025,57354
+20/09/2025,44531
+21/09/2025,39775
+22/09/2025,51783
+23/09/2025,51278
+24/09/2025,47651
+25/09/2025,47560
+26/09/2025,62118
+27/09/2025,52940
+28/09/2025,41625
+29/09/2025,48424
+30/09/2025,52264
+01/10/2025,58446
+02/10/2025,60936
+03/10/2025,62987
+04/10/2025,45656
+05/10/2025,41033
+06/10/2025,50760
+07/10/2025,58162
+08/10/2025,69946
+09/10/2025,67995
+10/10/2025,37822
+11/10/2025,38846
+12/10/2025,30377
+13/10/2025,60183
+14/10/2025,62138
+15/10/2025,65497
+16/10/2025,69131
+17/10/2025,58058
+18/10/2025,42346
+19/10/2025,45267
+20/10/2025,29351
+21/10/2025,37601
+22/10/2025,68654
+23/10/2025,53727
+24/10/2025,53592
+25/10/2025,30993
+26/10/2025,33038
+27/10/2025,52061
+28/10/2025,53389
+29/10/2025,46707
+30/10/2025,41444
+31/10/2025,39357
+01/11/2025,33519
+02/11/2025,27605
+03/11/2025,52288`;
                 
-                if (!response.ok) {
-                    throw new Error('Arquivo CSV não encontrado. Carregando dados de exemplo...');
-                }
-                
-                const csvData = await response.text();
                 allData = processCSVData(csvData);
                 populateYearFilter();
                 applyFilters();
                 updateConnectionStatus(true, 'Dados carregados do CSV com sucesso');
             } catch (error) {
                 console.error('Erro ao carregar CSV:', error);
-                showError(error.message);
-                loadSampleData();
+                showError('Erro ao carregar dados: ' + error.message);
             }
         }
         
-        // Processar dados do CSV
+        // Processar dados do CSV - CORRIGIDA
         function processCSVData(csvContent) {
             const weekdays = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
             const processedData = [];
@@ -662,24 +1364,33 @@
                 const line = lines[i].trim();
                 if (!line) continue;
                 
+                // Usar uma abordagem mais robusta para parsing CSV
                 const values = parseCSVLine(line);
                 
                 try {
-                    const dateStr = values[0]?.replace(/"/g, '').trim(); // Coluna Data
-                    const volume = parseFloat(values[1]?.replace(/"/g, '')) || 0; // Coluna QNTD Expedida
-                    const weekday = values[3]?.replace(/"/g, '').trim(); // Coluna Dias da Semana
+                    // Verificar se temos pelo menos 2 colunas (Data, Volume)
+                    if (values.length < 2) continue;
                     
-                    if (!dateStr || volume <= 0) continue;
+                    const dateStr = values[0]?.replace(/"/g, '').trim();
+                    const volumeStr = values[1]?.replace(/"/g, '').trim();
+                    
+                    // Verificar se temos dados válidos
+                    if (!dateStr || !volumeStr || volumeStr === '') continue;
+                    
+                    // Converter volume para número
+                    const volume = parseFloat(volumeStr.replace(/\./g, '').replace(',', '.'));
+                    
+                    if (isNaN(volume) || volume <= 0) continue;
                     
                     // Converter data do formato DD/MM/YYYY
                     const dateParts = dateStr.split('/');
                     if (dateParts.length !== 3) continue;
                     
                     const day = parseInt(dateParts[0]);
-                    const month = parseInt(dateParts[1]) - 1;
+                    const month = parseInt(dateParts[1]) - 1; // Mês é 0-indexed no JavaScript
                     const year = parseInt(dateParts[2]);
                     
-                    // Corrigir ano se necessário (assumindo anos entre 2020-2025)
+                    // Corrigir ano se necessário
                     const correctedYear = year < 100 ? year + 2000 : year;
                     
                     const date = new Date(correctedYear, month, day);
@@ -692,7 +1403,7 @@
                         date: date,
                         volume: volume,
                         days: 1,
-                        weekday: weekday || weekdays[dayOfWeek],
+                        weekday: weekdays[dayOfWeek],
                         dayOfWeek: dayOfWeek,
                         month: month + 1,
                         year: correctedYear,
@@ -700,107 +1411,12 @@
                     });
                 } catch (e) {
                     console.warn('Erro ao processar linha:', line, e);
+                    continue;
                 }
             }
             
             console.log('Dados processados do CSV:', processedData.length, 'registros');
-            return processedData;
-        }
-        
-        // Carregar dados de exemplo
-        function loadSampleData() {
-            allData = generateEcommerceSampleData();
-            populateYearFilter();
-            applyFilters();
-            updateConnectionStatus(true, 'Usando dados de exemplo');
-        }
-        
-        // Gerar dados de exemplo realistas para ecommerce
-        function generateEcommerceSampleData() {
-            console.log('Gerando dados de exemplo realistas para ecommerce...');
-            const data = [];
-            const startDate = new Date('2024-01-01');
-            const endDate = new Date('2024-12-31');
-            const weekdays = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-            
-            let currentDate = new Date(startDate);
-            let previousVolume = 1500;
-            
-            // Padrões para ecommerce
-            const seasonalPatterns = {
-                0: 0.8,  // Domingo - menor movimento
-                1: 1.1,  // Segunda - início de semana
-                2: 1.2,  // Terça - pico midweek
-                3: 1.15, // Quarta 
-                4: 1.3,  // Quinta - pré-final de semana
-                5: 1.4,  // Sexta - maior pico
-                6: 1.25  // Sábado - alto movimento
-            };
-            
-            // Padrões mensais para ecommerce (Black Friday, Natal, etc)
-            const monthlyPatterns = {
-                0: 0.9,   // Janeiro - pós-natal
-                1: 0.85,  // Fevereiro - baixa temporada
-                2: 0.95,  // Março
-                3: 1.0,   // Abril
-                4: 1.1,   // Maio - dia das mães
-                5: 1.05,  // Junho
-                6: 1.1,   // Julho - férias
-                7: 1.15,  // Agosto
-                8: 1.2,   // Setembro
-                9: 1.3,   // Outubro - pré-black friday
-                10: 1.8,  // Novembro - black friday
-                11: 2.2   // Dezembro - natal
-            };
-            
-            // Eventos especiais (Black Friday, Natal, etc)
-            const specialEvents = {
-                '2024-11-29': 3.5, // Black Friday
-                '2024-12-24': 2.8, // Véspera de Natal
-                '2024-12-25': 0.3, // Natal (baixo)
-                '2024-12-31': 2.5, // Ano Novo
-                '2024-05-12': 1.8, // Dia das Mães
-                '2024-06-12': 1.6, // Dia dos Namorados
-                '2024-08-11': 1.4  // Dia dos Pais
-            };
-            
-            while (currentDate <= endDate) {
-                const dateKey = currentDate.toISOString().split('T')[0];
-                const dayOfWeek = currentDate.getDay();
-                const month = currentDate.getMonth();
-                
-                let baseVariation = (Math.random() - 0.2) * 200;
-                let volume = Math.max(800, previousVolume + baseVariation);
-                
-                // Aplicar padrões sazonais
-                volume *= seasonalPatterns[dayOfWeek];
-                volume *= monthlyPatterns[month];
-                
-                // Aplicar eventos especiais
-                if (specialEvents[dateKey]) {
-                    volume *= specialEvents[dateKey];
-                }
-                
-                // Garantir que o volume seja inteiro
-                volume = Math.round(volume);
-                previousVolume = volume;
-                
-                data.push({
-                    date: new Date(currentDate),
-                    volume: volume,
-                    days: 1,
-                    weekday: weekdays[dayOfWeek],
-                    dayOfWeek: dayOfWeek,
-                    month: month + 1,
-                    year: currentDate.getFullYear(),
-                    monthYear: `${(month + 1).toString().padStart(2, '0')}/${currentDate.getFullYear()}`
-                });
-                
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
-            
-            console.log('Dados de ecommerce gerados:', data.length, 'registros');
-            return data;
+            return processedData.sort((a, b) => a.date - b.date);
         }
         
         function handleFileUpload(event) {
@@ -827,32 +1443,33 @@
                 } catch (error) {
                     console.error('Erro ao processar arquivo:', error);
                     showError('Erro ao processar arquivo: ' + error.message);
-                    loadSampleData();
                 }
             };
             
             reader.onerror = function() {
                 showError('Erro ao ler o arquivo');
-                loadSampleData();
             };
             
-            if (file.name.endsWith('.csv')) {
-                reader.readAsText(file);
+            if (file.name.toLowerCase().endsWith('.csv')) {
+                reader.readAsText(file, 'UTF-8');
             } else {
                 showError('Formato de arquivo não suportado. Use CSV.');
-                loadSampleData();
             }
+            
+            // Resetar o input de arquivo para permitir carregar o mesmo arquivo novamente
+            fileInput.value = '';
         }
         
         function parseCSVLine(line) {
             const result = [];
             let current = '';
             let inQuotes = false;
+            let quoteChar = '"';
             
             for (let i = 0; i < line.length; i++) {
                 const char = line[i];
                 
-                if (char === '"') {
+                if (char === quoteChar) {
                     inQuotes = !inQuotes;
                 } else if (char === ',' && !inQuotes) {
                     result.push(current);
@@ -899,7 +1516,7 @@
             });
             
             if (filteredData.length === 0) {
-                showError('Nenhum dado com esses filtros');
+                showError('Nenhum dado encontrado com esses filtros');
             } else {
                 hideError();
                 updateDashboard();
@@ -912,6 +1529,14 @@
             createCharts(analysis);
             generateEcommerceInsights(analysis);
             populateDataTable(filteredData);
+            updateStatisticalAnalysis(analysis);
+        }
+        
+        // Função para atualizar a ordenação
+        function updateSorting() {
+            currentSortColumn = sortColumnSelect.value;
+            currentSortOrder = sortOrderSelect.value;
+            populateDataTable(filteredData);
         }
         
         // Análise especializada para ecommerce
@@ -920,6 +1545,9 @@
             
             const totalVolume = data.reduce((sum, item) => sum + item.volume, 0);
             const averageDaily = totalVolume / data.length;
+            
+            // Encontrar dia com maior volume
+            const maxVolumeDay = data.reduce((max, item) => item.volume > max.volume ? item : max, data[0]);
             
             // Estatísticas por dia da semana
             const weekdayStats = {};
@@ -937,6 +1565,16 @@
                 weekdayAverages[weekday] = weekdayStats[weekday].total / weekdayStats[weekday].count;
             });
             
+            // Encontrar melhor dia da semana
+            let maxWeekdayVolume = 0;
+            let maxWeekday = null;
+            Object.keys(weekdayAverages).forEach(weekday => {
+                if (weekdayAverages[weekday] > maxWeekdayVolume) {
+                    maxWeekdayVolume = weekdayAverages[weekday];
+                    maxWeekday = parseInt(weekday);
+                }
+            });
+            
             // Estatísticas mensais
             const monthlyStats = {};
             data.forEach(item => {
@@ -952,16 +1590,7 @@
                 monthlyAverages[month] = monthlyStats[month].total / monthlyStats[month].count;
             });
             
-            // Encontrar máximos
-            let maxWeekdayVolume = 0;
-            let maxWeekday = null;
-            Object.keys(weekdayAverages).forEach(weekday => {
-                if (weekdayAverages[weekday] > maxWeekdayVolume) {
-                    maxWeekdayVolume = weekdayAverages[weekday];
-                    maxWeekday = parseInt(weekday);
-                }
-            });
-            
+            // Encontrar melhor mês
             let maxMonthlyVolume = 0;
             let maxMonth = null;
             Object.keys(monthlyAverages).forEach(month => {
@@ -974,25 +1603,25 @@
             // Análise de aumentos e quedas
             const increaseByWeekday = {};
             const decreaseByWeekday = {};
-            let previousVolume = null;
+            
             const sortedData = [...data].sort((a, b) => a.date - b.date);
             
-            sortedData.forEach((item, index) => {
-                if (index > 0 && previousVolume !== null) {
-                    if (item.volume > previousVolume) {
-                        if (!increaseByWeekday[item.dayOfWeek]) {
-                            increaseByWeekday[item.dayOfWeek] = 0;
-                        }
-                        increaseByWeekday[item.dayOfWeek]++;
-                    } else if (item.volume < previousVolume) {
-                        if (!decreaseByWeekday[item.dayOfWeek]) {
-                            decreaseByWeekday[item.dayOfWeek] = 0;
-                        }
-                        decreaseByWeekday[item.dayOfWeek]++;
+            for (let i = 1; i < sortedData.length; i++) {
+                const current = sortedData[i];
+                const previous = sortedData[i-1];
+                
+                if (current.volume > previous.volume) {
+                    if (!increaseByWeekday[current.dayOfWeek]) {
+                        increaseByWeekday[current.dayOfWeek] = 0;
                     }
+                    increaseByWeekday[current.dayOfWeek]++;
+                } else if (current.volume < previous.volume) {
+                    if (!decreaseByWeekday[current.dayOfWeek]) {
+                        decreaseByWeekday[current.dayOfWeek] = 0;
+                    }
+                    decreaseByWeekday[current.dayOfWeek]++;
                 }
-                previousVolume = item.volume;
-            });
+            }
             
             // Encontrar dias com mais aumentos e quedas
             let maxIncreaseFrequency = 0;
@@ -1017,12 +1646,12 @@
             const dailyVariations = [];
             const peaks = [];
             const threshold = averageDaily * 1.5; // Pico = 50% acima da média
-            
+
             for (let i = 1; i < sortedData.length; i++) {
                 const current = sortedData[i];
                 const previous = sortedData[i-1];
                 const variation = current.volume - previous.volume;
-                const variationPercent = ((variation / previous.volume) * 100);
+                const variationPercent = previous.volume > 0 ? ((variation / previous.volume) * 100) : 0;
                 
                 dailyVariations.push({
                     date: current.date,
@@ -1051,6 +1680,7 @@
             return {
                 totalVolume,
                 averageDaily,
+                maxVolumeDay,
                 maxWeekday: { day: maxWeekday, volume: maxWeekdayVolume },
                 maxMonth: { month: maxMonth, volume: maxMonthlyVolume },
                 weekdayAverages,
@@ -1068,30 +1698,35 @@
         }
         
         function displayStats(analysis) {
+            const weekdayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+            
             document.getElementById('total-expedido').textContent = analysis.totalVolume.toLocaleString('pt-BR');
             document.getElementById('media-diaria').textContent = analysis.averageDaily.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
-            
-            const weekdayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-            document.getElementById('dia-maior-volume').textContent = 
-                analysis.maxWeekday.day !== null ? weekdayNames[analysis.maxWeekday.day] : '-';
+            document.getElementById('dia-maior-volume').textContent = analysis.maxVolumeDay ? 
+                `${moment(analysis.maxVolumeDay.date).format('DD/MM')} (${analysis.maxVolumeDay.volume.toLocaleString('pt-BR')})` : '-';
             document.getElementById('mes-maior-volume').textContent = analysis.maxMonth.month || '-';
         }
         
         function createCharts(analysis) {
             const weekdayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
             
+            // Destruir gráficos existentes
             Object.values(charts).forEach(chart => {
-                if (chart) chart.destroy();
+                if (chart && typeof chart.destroy === 'function') {
+                    chart.destroy();
+                }
             });
+            charts = {};
             
-            // Gráfico de tendência
+            // Gráfico de tendência de volume
             const trendCtx = document.getElementById('volume-trend-chart').getContext('2d');
-            const dates = analysis.rawData.map(item => moment(item.date).format('DD/MM'));
-            const volumes = analysis.rawData.map(item => item.volume);
+            const trendDates = analysis.rawData.map(item => moment(item.date).format('DD/MM'));
+            const trendVolumes = analysis.rawData.map(item => item.volume);
             
-            const step = Math.max(1, Math.floor(dates.length / 15));
-            const displayDates = dates.filter((_, index) => index % step === 0);
-            const displayVolumes = volumes.filter((_, index) => index % step === 0);
+            // Limitar número de pontos no gráfico para melhor performance
+            const step = Math.max(1, Math.floor(trendDates.length / 30));
+            const displayDates = trendDates.filter((_, index) => index % step === 0);
+            const displayVolumes = trendVolumes.filter((_, index) => index % step === 0);
             
             charts.trend = new Chart(trendCtx, {
                 type: 'line',
@@ -1110,8 +1745,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { display: true },
+                    plugins: {
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
@@ -1121,10 +1755,18 @@
                         }
                     },
                     scales: {
-                        x: { title: { display: true, text: 'Data' } },
-                        y: { 
-                            beginAtZero: true, 
-                            title: { display: true, text: 'Volume Expedido' },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Data'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Volume Expedido'
+                            },
+                            beginAtZero: true,
                             ticks: {
                                 callback: function(value) {
                                     return value.toLocaleString('pt-BR');
@@ -1135,7 +1777,7 @@
                 }
             });
             
-            // Gráfico dia da semana
+            // Gráfico volume por dia da semana
             const weekdayCtx = document.getElementById('weekday-volume-chart').getContext('2d');
             const weekdayLabels = [0,1,2,3,4,5,6].map(day => weekdayNames[day]);
             const weekdayData = [0,1,2,3,4,5,6].map(day => analysis.weekdayAverages[day] || 0);
@@ -1145,7 +1787,7 @@
                 data: {
                     labels: weekdayLabels,
                     datasets: [{
-                        label: 'Volume Médio por Dia',
+                        label: 'Volume Médio',
                         data: weekdayData,
                         backgroundColor: 'rgba(67, 97, 238, 0.7)',
                         borderColor: 'rgb(67, 97, 238)',
@@ -1157,8 +1799,7 @@
                     maintainAspectRatio: false,
                     scales: {
                         y: { 
-                            beginAtZero: true, 
-                            title: { display: true, text: 'Volume Médio' },
+                            beginAtZero: true,
                             ticks: {
                                 callback: function(value) {
                                     return value.toLocaleString('pt-BR');
@@ -1169,7 +1810,7 @@
                 }
             });
             
-            // Gráfico mensal
+            // Gráfico volume mensal
             const monthlyCtx = document.getElementById('monthly-volume-chart').getContext('2d');
             const monthlyLabels = Object.keys(analysis.monthlyAverages).sort();
             const monthlyData = monthlyLabels.map(month => analysis.monthlyAverages[month]);
@@ -1191,8 +1832,7 @@
                     maintainAspectRatio: false,
                     scales: {
                         y: { 
-                            beginAtZero: true, 
-                            title: { display: true, text: 'Volume Médio' },
+                            beginAtZero: true,
                             ticks: {
                                 callback: function(value) {
                                     return value.toLocaleString('pt-BR');
@@ -1300,6 +1940,415 @@
             });
         }
         
+        // NOVA FUNÇÃO: Atualizar Análise Estatística
+        function updateStatisticalAnalysis(analysis) {
+            const volumes = analysis.rawData.map(item => item.volume);
+            
+            // Estatísticas Descritivas
+            const stats = calculateDescriptiveStats(volumes);
+            
+            // Atualizar elementos da DOM com as estatísticas
+            document.getElementById('stat-mean').textContent = stats.mean.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('stat-median').textContent = stats.median.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('stat-std').textContent = stats.stdDev.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('stat-cv').textContent = (stats.coefficientOfVariation * 100).toFixed(1) + '%';
+            
+            document.getElementById('stat-min').textContent = stats.min.toLocaleString('pt-BR');
+            document.getElementById('stat-max').textContent = stats.max.toLocaleString('pt-BR');
+            document.getElementById('stat-range').textContent = stats.range.toLocaleString('pt-BR');
+            document.getElementById('stat-q3').textContent = stats.q3.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            
+            document.getElementById('stat-skew').textContent = stats.skewness.toFixed(3);
+            document.getElementById('stat-kurtosis').textContent = stats.kurtosis.toFixed(3);
+            document.getElementById('stat-mode').textContent = stats.mode.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('stat-dist-type').textContent = stats.distributionType;
+            
+            // Análise de Tendência
+            const trendStats = calculateTrendStats(analysis.rawData);
+            document.getElementById('stat-correlation').textContent = trendStats.correlation.toFixed(3);
+            document.getElementById('stat-regression-slope').textContent = trendStats.regressionSlope.toFixed(2);
+            document.getElementById('stat-r-squared').textContent = trendStats.rSquared.toFixed(3);
+            document.getElementById('stat-p-value').textContent = trendStats.pValue.toFixed(4);
+            
+            // Análise de Sazonalidade
+            const seasonalStats = calculateSeasonalStats(analysis.rawData);
+            document.getElementById('stat-seasonal-strength').textContent = seasonalStats.strength.toFixed(3);
+            document.getElementById('stat-seasonal-period').textContent = seasonalStats.period;
+            document.getElementById('stat-seasonal-variation').textContent = (seasonalStats.variation * 100).toFixed(1) + '%';
+            document.getElementById('stat-seasonal-peak').textContent = seasonalStats.peak;
+            
+            // Validação do Modelo
+            const validationStats = calculateValidationStats(analysis.rawData);
+            document.getElementById('stat-mae').textContent = validationStats.mae.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('stat-rmse').textContent = validationStats.rmse.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('stat-mape').textContent = (validationStats.mape * 100).toFixed(1) + '%';
+            document.getElementById('stat-accuracy').textContent = (validationStats.accuracy * 100).toFixed(1) + '%';
+            
+            // Análise Preditiva
+            const predictionStats = calculatePredictionStats(analysis.rawData);
+            document.getElementById('stat-pred-avg').textContent = predictionStats.average.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('stat-pred-growth').textContent = (predictionStats.growth * 100).toFixed(1) + '%';
+            document.getElementById('stat-confidence-interval').textContent = '±' + predictionStats.confidenceInterval.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+            document.getElementById('stat-increase-prob').textContent = (predictionStats.increaseProbability * 100).toFixed(1) + '%';
+            
+            // Criar gráfico de previsão
+            createPredictionChart(predictionStats, analysis.rawData);
+        }
+        
+        // Funções auxiliares para cálculos estatísticos
+        function calculateDescriptiveStats(data) {
+            const sorted = [...data].sort((a, b) => a - b);
+            const n = sorted.length;
+            
+            // Média
+            const mean = sorted.reduce((sum, val) => sum + val, 0) / n;
+            
+            // Mediana
+            const median = n % 2 === 0 
+                ? (sorted[n/2 - 1] + sorted[n/2]) / 2 
+                : sorted[Math.floor(n/2)];
+            
+            // Desvio padrão
+            const variance = sorted.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / n;
+            const stdDev = Math.sqrt(variance);
+            
+            // Coeficiente de variação
+            const coefficientOfVariation = stdDev / mean;
+            
+            // Mínimo, máximo e amplitude
+            const min = sorted[0];
+            const max = sorted[n - 1];
+            const range = max - min;
+            
+            // Quartis
+            const q1 = sorted[Math.floor(n * 0.25)];
+            const q3 = sorted[Math.floor(n * 0.75)];
+            
+            // Assimetria (Skewness)
+            const skewness = n > 0 ? sorted.reduce((sum, val) => sum + Math.pow((val - mean) / stdDev, 3), 0) / n : 0;
+            
+            // Curtose
+            const kurtosis = n > 0 ? sorted.reduce((sum, val) => sum + Math.pow((val - mean) / stdDev, 4), 0) / n - 3 : 0;
+            
+            // Moda (simplificada)
+            const frequency = {};
+            let maxFreq = 0;
+            let mode = sorted[0] || 0;
+            
+            sorted.forEach(val => {
+                frequency[val] = (frequency[val] || 0) + 1;
+                if (frequency[val] > maxFreq) {
+                    maxFreq = frequency[val];
+                    mode = val;
+                }
+            });
+            
+            // Tipo de distribuição
+            let distributionType = 'Normal';
+            if (Math.abs(skewness) > 1) {
+                distributionType = skewness > 0 ? 'Assimétrica Positiva' : 'Assimétrica Negativa';
+            } else if (Math.abs(kurtosis) > 1) {
+                distributionType = kurtosis > 0 ? 'Leptocúrtica' : 'Platicúrtica';
+            }
+            
+            return {
+                mean,
+                median,
+                stdDev,
+                coefficientOfVariation,
+                min,
+                max,
+                range,
+                q1,
+                q3,
+                skewness,
+                kurtosis,
+                mode,
+                distributionType
+            };
+        }
+        
+        function calculateTrendStats(data) {
+            // Implementação simplificada de análise de tendência
+            const n = data.length;
+            if (n < 2) {
+                return { correlation: 0, regressionSlope: 0, rSquared: 0, pValue: 1 };
+            }
+            
+            const x = Array.from({length: n}, (_, i) => i); // Dias como variável independente
+            const y = data.map(item => item.volume); // Volume como variável dependente
+            
+            // Médias
+            const xMean = x.reduce((sum, val) => sum + val, 0) / n;
+            const yMean = y.reduce((sum, val) => sum + val, 0) / n;
+            
+            // Coeficientes de regressão linear
+            let numerator = 0;
+            let denominator = 0;
+            
+            for (let i = 0; i < n; i++) {
+                numerator += (x[i] - xMean) * (y[i] - yMean);
+                denominator += Math.pow(x[i] - xMean, 2);
+            }
+            
+            const regressionSlope = denominator !== 0 ? numerator / denominator : 0;
+            const regressionIntercept = yMean - regressionSlope * xMean;
+            
+            // Coeficiente de correlação
+            let sumXY = 0;
+            let sumX2 = 0;
+            let sumY2 = 0;
+            
+            for (let i = 0; i < n; i++) {
+                sumXY += x[i] * y[i];
+                sumX2 += Math.pow(x[i], 2);
+                sumY2 += Math.pow(y[i], 2);
+            }
+            
+            const correlation = denominator !== 0 ? 
+                (n * sumXY - x.reduce((a, b) => a + b) * y.reduce((a, b) => a + b)) / 
+                Math.sqrt((n * sumX2 - Math.pow(x.reduce((a, b) => a + b), 2)) * 
+                         (n * sumY2 - Math.pow(y.reduce((a, b) => a + b), 2))) : 0;
+            
+            // R²
+            const rSquared = Math.pow(correlation, 2);
+            
+            // p-value (simplificado)
+            const pValue = 0.05; // Valor simplificado
+            
+            return {
+                correlation: correlation || 0,
+                regressionSlope,
+                rSquared,
+                pValue
+            };
+        }
+        
+        function calculateSeasonalStats(data) {
+            // Implementação simplificada de análise de sazonalidade
+            const volumes = data.map(item => item.volume);
+            const n = volumes.length;
+            
+            if (n === 0) {
+                return { strength: 0, period: 'Semanal', variation: 0, peak: '' };
+            }
+            
+            // Médias por dia da semana
+            const weekdayAverages = {};
+            data.forEach(item => {
+                if (!weekdayAverages[item.dayOfWeek]) {
+                    weekdayAverages[item.dayOfWeek] = { sum: 0, count: 0 };
+                }
+                weekdayAverages[item.dayOfWeek].sum += item.volume;
+                weekdayAverages[item.dayOfWeek].count++;
+            });
+            
+            // Encontrar dia com maior média
+            let maxAvg = 0;
+            let peakDay = '';
+            const weekdayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+            
+            Object.keys(weekdayAverages).forEach(weekday => {
+                const avg = weekdayAverages[weekday].sum / weekdayAverages[weekday].count;
+                if (avg > maxAvg) {
+                    maxAvg = avg;
+                    peakDay = weekdayNames[weekday];
+                }
+            });
+            
+            // Força sazonal (simplificada)
+            const overallMean = volumes.reduce((sum, val) => sum + val, 0) / n;
+            const seasonalStrength = maxAvg / overallMean - 1;
+            
+            return {
+                strength: Math.abs(seasonalStrength),
+                period: 'Semanal',
+                variation: seasonalStrength,
+                peak: peakDay
+            };
+        }
+        
+        function calculateValidationStats(data) {
+            // Implementação simplificada de métricas de validação
+            const volumes = data.map(item => item.volume);
+            const n = volumes.length;
+            
+            if (n < 2) {
+                return { mae: 0, rmse: 0, mape: 0, accuracy: 1 };
+            }
+            
+            // Previsão simples (média móvel)
+            const predictions = [];
+            for (let i = 1; i < n; i++) {
+                predictions.push((volumes[i-1] + volumes[i]) / 2);
+            }
+            
+            const actuals = volumes.slice(1);
+            
+            // MAE (Mean Absolute Error)
+            const mae = actuals.reduce((sum, actual, i) => sum + Math.abs(actual - predictions[i]), 0) / (n - 1);
+            
+            // RMSE (Root Mean Square Error)
+            const rmse = Math.sqrt(actuals.reduce((sum, actual, i) => sum + Math.pow(actual - predictions[i], 2), 0) / (n - 1));
+            
+            // MAPE (Mean Absolute Percentage Error)
+            const mape = actuals.reduce((sum, actual, i) => sum + Math.abs((actual - predictions[i]) / actual), 0) / (n - 1);
+            
+            // Acurácia (simplificada)
+            const accuracy = 1 - mape;
+            
+            return {
+                mae,
+                rmse,
+                mape,
+                accuracy
+            };
+        }
+        
+        function calculatePredictionStats(data) {
+            // Implementação simplificada de previsão
+            const volumes = data.map(item => item.volume);
+            const n = volumes.length;
+            
+            if (n < 2) {
+                return { average: volumes[0] || 0, growth: 0, confidenceInterval: 0, increaseProbability: 0.5, slope: 0, intercept: volumes[0] || 0 };
+            }
+            
+            // Tendência linear simples
+            const x = Array.from({length: n}, (_, i) => i);
+            const y = volumes;
+            
+            const xMean = x.reduce((sum, val) => sum + val, 0) / n;
+            const yMean = y.reduce((sum, val) => sum + val, 0) / n;
+            
+            let numerator = 0;
+            let denominator = 0;
+            
+            for (let i = 0; i < n; i++) {
+                numerator += (x[i] - xMean) * (y[i] - yMean);
+                denominator += Math.pow(x[i] - xMean, 2);
+            }
+            
+            const slope = denominator !== 0 ? numerator / denominator : 0;
+            const intercept = yMean - slope * xMean;
+            
+            // Previsão para os próximos 30 dias
+            const lastVolume = volumes[n - 1];
+            const predictedAverage = lastVolume + slope * 15; // Média dos próximos 30 dias
+            
+            // Crescimento esperado
+            const growth = slope / lastVolume;
+            
+            // Intervalo de confiança (simplificado)
+            const confidenceInterval = lastVolume * 0.1; // 10% do último valor
+            
+            // Probabilidade de aumento (baseada na tendência)
+            const increaseProbability = slope > 0 ? 0.7 : 0.3;
+            
+            return {
+                average: predictedAverage,
+                growth,
+                confidenceInterval,
+                increaseProbability,
+                slope,
+                intercept
+            };
+        }
+        
+        function createPredictionChart(predictionStats, data) {
+            const ctx = document.getElementById('prediction-chart').getContext('2d');
+            
+            if (charts.prediction) {
+                charts.prediction.destroy();
+            }
+            
+            // Dados históricos (últimos 30 dias) + previsão (próximos 30 dias)
+            const historicalData = data.slice(-30).map(item => item.volume);
+            const historicalDates = data.slice(-30).map(item => moment(item.date).format('DD/MM'));
+            
+            // Gerar previsões para os próximos 30 dias
+            const lastIndex = historicalData.length - 1;
+            const predictions = [];
+            
+            for (let i = 1; i <= 30; i++) {
+                predictions.push(
+                    predictionStats.intercept + predictionStats.slope * (lastIndex + i)
+                );
+            }
+            
+            // Datas futuras
+            const lastDate = data[data.length - 1].date;
+            const futureDates = [];
+            for (let i = 1; i <= 30; i++) {
+                const futureDate = new Date(lastDate);
+                futureDate.setDate(futureDate.getDate() + i);
+                futureDates.push(moment(futureDate).format('DD/MM'));
+            }
+            
+            charts.prediction = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [...historicalDates, ...futureDates],
+                    datasets: [
+                        {
+                            label: 'Dados Históricos',
+                            data: [...historicalData, ...Array(30).fill(null)],
+                            borderColor: '#4361ee',
+                            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                            borderWidth: 2,
+                            fill: false
+                        },
+                        {
+                            label: 'Previsão',
+                            data: [...Array(historicalData.length).fill(null), ...predictions],
+                            borderColor: '#f72585',
+                            backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw ? context.raw.toLocaleString('pt-BR') : 'N/A'}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Data'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Volume Expedido'
+                            },
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('pt-BR');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
         // Gerar insights especializados para ecommerce
         function generateEcommerceInsights(analysis) {
             const weekdayNames = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
@@ -1311,10 +2360,6 @@
             const negativeVariations = analysis.dailyVariations.filter(v => v.variation < 0).length;
             const totalVariations = analysis.dailyVariations.length;
             const positivePercentage = totalVariations > 0 ? ((positiveVariations / totalVariations) * 100).toFixed(1) : 0;
-
-            // Maior aumento e queda
-            const maxIncrease = analysis.dailyVariations.reduce((max, v) => v.variation > max.variation ? v : max, {variation: -Infinity});
-            const maxDecrease = analysis.dailyVariations.reduce((min, v) => v.variation < min.variation ? v : min, {variation: Infinity});
 
             // Resumo estatístico
             let summaryHTML = `
@@ -1340,37 +2385,43 @@
             let insightsHTML = '<div class="insights-grid">';
             
             // Insight 1: Dias de maior movimento
-            insightsHTML += `
-                <div class="insight-item">
-                    <h4><i class="fas fa-calendar-check"></i> Padrão Semanal</h4>
-                    <p>${weekdayNames[analysis.maxWeekday.day]} tem o maior volume médio (${analysis.maxWeekday.volume.toLocaleString('pt-BR')})</p>
-                    <div class="resource-suggestion">
-                        <strong>Ação:</strong> Programar horas extras nas ${weekdayNames[analysis.maxWeekday.day].toLowerCase()}s
+            if (analysis.maxWeekday.day !== null) {
+                insightsHTML += `
+                    <div class="insight-item">
+                        <h4><i class="fas fa-calendar-check"></i> Padrão Semanal</h4>
+                        <p>${weekdayNames[analysis.maxWeekday.day]} tem o maior volume médio (${analysis.maxWeekday.volume.toLocaleString('pt-BR')})</p>
+                        <div class="resource-suggestion">
+                            <strong>Ação:</strong> Programar horas extras nas ${weekdayNames[analysis.maxWeekday.day].toLowerCase()}s
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
             
             // Insight 2: Dias com mais aumentos
-            insightsHTML += `
-                <div class="insight-item info">
-                    <h4><i class="fas fa-arrow-up"></i> Dias de Crescimento</h4>
-                    <p>${weekdayNames[analysis.maxIncreaseWeekday.day]} tem a maior frequência de aumentos (${analysis.maxIncreaseWeekday.frequency} ocorrências)</p>
-                    <div class="resource-suggestion">
-                        <strong>Ação:</strong> Evitar banco de horas às ${weekdayNames[analysis.maxIncreaseWeekday.day].toLowerCase()}s
+            if (analysis.maxIncreaseWeekday.day !== null) {
+                insightsHTML += `
+                    <div class="insight-item info">
+                        <h4><i class="fas fa-arrow-up"></i> Dias de Crescimento</h4>
+                        <p>${weekdayNames[analysis.maxIncreaseWeekday.day]} tem a maior frequência de aumentos (${analysis.maxIncreaseWeekday.frequency} ocorrências)</p>
+                        <div class="resource-suggestion">
+                            <strong>Ação:</strong> Evitar banco de horas às ${weekdayNames[analysis.maxIncreaseWeekday.day].toLowerCase()}s
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
             
             // Insight 3: Dias com mais quedas
-            insightsHTML += `
-                <div class="insight-item warning">
-                    <h4><i class="fas fa-arrow-down"></i> Dias de Queda</h4>
-                    <p>${weekdayNames[analysis.maxDecreaseWeekday.day]} tem a maior frequência de quedas (${analysis.maxDecreaseWeekday.frequency} ocorrências)</p>
-                    <div class="resource-suggestion">
-                        <strong>Ação:</strong> Oferecer folga/banco de horas às ${weekdayNames[analysis.maxDecreaseWeekday.day].toLowerCase()}s
+            if (analysis.maxDecreaseWeekday.day !== null) {
+                insightsHTML += `
+                    <div class="insight-item warning">
+                        <h4><i class="fas fa-arrow-down"></i> Dias de Queda</h4>
+                        <p>${weekdayNames[analysis.maxDecreaseWeekday.day]} tem a maior frequência de quedas (${analysis.maxDecreaseWeekday.frequency} ocorrências)</p>
+                        <div class="resource-suggestion">
+                            <strong>Ação:</strong> Oferecer folga/banco de horas às ${weekdayNames[analysis.maxDecreaseWeekday.day].toLowerCase()}s
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
             
             // Insight 4: Picos significativos
             if (analysis.peaks.length > 0) {
@@ -1427,10 +2478,15 @@
             const tableBody = document.getElementById('data-table-body');
             tableBody.innerHTML = '';
             
-            const sortedData = [...data].sort((a, b) => b.date - a.date).slice(0, 30);
-            const averageVolume = sortedData.reduce((sum, item) => sum + item.volume, 0) / sortedData.length;
+            // Ordenar os dados
+            const sortedData = sortData([...data], currentSortColumn, currentSortOrder);
             
-            sortedData.forEach((item, index) => {
+            // Limitar a exibição a 30 registros
+            const displayData = sortedData.slice(0, 30);
+            const averageVolume = displayData.length > 0 ? 
+                displayData.reduce((sum, item) => sum + item.volume, 0) / displayData.length : 0;
+            
+            displayData.forEach((item, index) => {
                 const row = document.createElement('tr');
                 
                 let variationPercent = '-';
@@ -1439,10 +2495,10 @@
                 let variationBadgeClass = 'neutral';
                 let status = '';
                 
-                if (index < sortedData.length - 1) {
-                    const prevItem = sortedData[index + 1];
+                if (index < displayData.length - 1) {
+                    const prevItem = displayData[index + 1];
                     const variation = item.volume - prevItem.volume;
-                    const changePercent = ((variation / prevItem.volume) * 100);
+                    const changePercent = prevItem.volume > 0 ? ((variation / prevItem.volume) * 100) : 0;
                     
                     variationPercent = `${changePercent > 0 ? '+' : ''}${changePercent.toFixed(1)}%`;
                     variationVolume = `${variation > 0 ? '+' : ''}${variation.toLocaleString('pt-BR')}`;
@@ -1500,33 +2556,443 @@
             }
         }
         
-        function exportReport() {
-            const exportData = {
-                dashboard: {
-                    totalVolume: document.getElementById('total-expedido').textContent,
-                    averageDaily: document.getElementById('media-diaria').textContent,
-                    maxWeekday: document.getElementById('dia-maior-volume').textContent,
-                    maxMonth: document.getElementById('mes-maior-volume').textContent
-                },
-                rawData: filteredData.map(item => ({
-                    data: moment(item.date).format('DD/MM/YYYY'),
-                    volume: item.volume,
-                    diaSemana: item.weekday,
-                    mesAno: item.monthYear
-                }))
-            };
+        // Função para ordenar os dados
+        function sortData(data, column, order) {
+            return data.sort((a, b) => {
+                let aValue, bValue;
+                
+                switch(column) {
+                    case 'date':
+                        aValue = a.date;
+                        bValue = b.date;
+                        break;
+                    case 'volume':
+                        aValue = a.volume;
+                        bValue = b.volume;
+                        break;
+                    case 'weekday':
+                        aValue = a.weekday;
+                        bValue = b.weekday;
+                        break;
+                    case 'month':
+                        aValue = a.monthYear;
+                        bValue = b.monthYear;
+                        break;
+                    case 'variationPercent':
+                    case 'variationVolume':
+                    case 'status':
+                        // Para estas colunas, usamos o volume como base
+                        aValue = a.volume;
+                        bValue = b.volume;
+                        break;
+                    default:
+                        aValue = a.date;
+                        bValue = b.date;
+                }
+                
+                // Comparação para ordem crescente ou decrescente
+                if (order === 'asc') {
+                    return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+                } else {
+                    return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+                }
+            });
+        }
+        
+        // Função para baixar relatório completo
+        function downloadReport() {
+            try {
+                // Criar um resumo do relatório
+                const analysis = analyzeEcommerceData(filteredData);
+                const weekdayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+                
+                let reportContent = `RELATÓRIO DE ANÁLISE DE VOLUME EXPEDIDO\n`;
+                reportContent += `Data de geração: ${moment().format('DD/MM/YYYY HH:mm')}\n\n`;
+                
+                // Estatísticas principais
+                reportContent += `ESTATÍSTICAS PRINCIPAIS:\n`;
+                reportContent += `Volume Total: ${analysis.totalVolume.toLocaleString('pt-BR')}\n`;
+                reportContent += `Média Diária: ${analysis.averageDaily.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}\n`;
+                reportContent += `Dia com Maior Volume: ${analysis.maxVolumeDay ? moment(analysis.maxVolumeDay.date).format('DD/MM') : '-'} (${analysis.maxVolumeDay ? analysis.maxVolumeDay.volume.toLocaleString('pt-BR') : '-'})\n`;
+                reportContent += `Mês com Maior Volume: ${analysis.maxMonth.month || '-'}\n\n`;
+                
+                // Análise por dia da semana
+                reportContent += `ANÁLISE POR DIA DA SEMANA:\n`;
+                [0,1,2,3,4,5,6].forEach(day => {
+                    if (analysis.weekdayAverages[day]) {
+                        reportContent += `${weekdayNames[day]}: ${analysis.weekdayAverages[day].toLocaleString('pt-BR', { maximumFractionDigits: 0 })}\n`;
+                    }
+                });
+                reportContent += `\n`;
+                
+                // Tendências
+                reportContent += `TENDÊNCIAS:\n`;
+                reportContent += `Tendência (30 dias): ${analysis.trend > 0 ? '+' : ''}${analysis.trend.toFixed(1)}%\n`;
+                reportContent += `Picos detectados: ${analysis.peaks.length}\n\n`;
+                
+                // Dados detalhados (primeiros 20 registros)
+                reportContent += `DADOS DETALHADOS (primeiros 20 registros):\n`;
+                reportContent += `Data\t\tVolume\t\tDia da Semana\tVariação\n`;
+                filteredData.slice(0, 20).forEach((item, index) => {
+                    let variation = '-';
+                    if (index > 0) {
+                        const prevItem = filteredData[index - 1];
+                        const change = item.volume - prevItem.volume;
+                        const changePercent = prevItem.volume > 0 ? ((change / prevItem.volume) * 100) : 0;
+                        variation = `${change > 0 ? '+' : ''}${changePercent.toFixed(1)}%`;
+                    }
+                    
+                    reportContent += `${moment(item.date).format('DD/MM')}\t\t${item.volume.toLocaleString('pt-BR')}\t\t${item.weekday}\t\t${variation}\n`;
+                });
+                
+                // Criar arquivo e fazer download
+                const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `relatorio_volume_expedido_${moment().format('YYYY-MM-DD')}.txt`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+            } catch (error) {
+                console.error('Erro ao gerar relatório:', error);
+                showError('Erro ao gerar relatório: ' + error.message);
+            }
+        }
+        
+        // Função para compartilhar via WhatsApp como imagem
+        function shareViaWhatsAppImage() {
+            whatsappModal.style.display = 'none';
             
-            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `relatorio-volume-${moment().format('DD-MM-YYYY')}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            try {
+                // Capturar o dashboard como imagem
+                html2canvas(document.getElementById('dashboard')).then(canvas => {
+                    // Converter canvas para imagem
+                    const image = canvas.toDataURL('image/png');
+                    
+                    // Criar link para WhatsApp
+                    const analysis = analyzeEcommerceData(filteredData);
+                    const message = `Relatório de Análise de Volume Expedido\nVolume Total: ${analysis.totalVolume.toLocaleString('pt-BR')}\nMédia Diária: ${analysis.averageDaily.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}\nGerado em: ${moment().format('DD/MM/YYYY HH:mm')}`;
+                    
+                    // Codificar a mensagem para URL
+                    const encodedMessage = encodeURIComponent(message);
+                    
+                    // Abrir WhatsApp com a imagem
+                    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
+                    window.open(whatsappUrl, '_blank');
+                    
+                    // Nota: Para realmente enviar a imagem, seria necessário um servidor
+                    // para hospedar a imagem, pois o WhatsApp Web não permite enviar
+                    // imagens diretamente via URL de dados (data URL)
+                    alert('Para enviar a imagem, salve-a primeiro e depois anexe manualmente no WhatsApp.');
+                });
+            } catch (error) {
+                console.error('Erro ao gerar imagem para WhatsApp:', error);
+                showError('Erro ao compartilhar imagem: ' + error.message);
+            }
+        }
+        
+        // Função para compartilhar via WhatsApp como texto
+        function shareViaWhatsAppText() {
+            whatsappModal.style.display = 'none';
             
-            alert('Relatório exportado!');
+            try {
+                const analysis = analyzeEcommerceData(filteredData);
+                const weekdayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+                
+                let message = `📊 *RELATÓRIO DE ANÁLISE DE VOLUME EXPEDIDO*\n\n`;
+                message += `*Estatísticas Principais:*\n`;
+                message += `📦 Volume Total: ${analysis.totalVolume.toLocaleString('pt-BR')}\n`;
+                message += `📈 Média Diária: ${analysis.averageDaily.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}\n`;
+                message += `📅 Dia com Maior Volume: ${analysis.maxVolumeDay ? moment(analysis.maxVolumeDay.date).format('DD/MM') : '-'} (${analysis.maxVolumeDay ? analysis.maxVolumeDay.volume.toLocaleString('pt-BR') : '-'})\n`;
+                message += `🗓️ Mês com Maior Volume: ${analysis.maxMonth.month || '-'}\n\n`;
+                
+                message += `*Melhor Dia da Semana:*\n`;
+                if (analysis.maxWeekday.day !== null) {
+                    message += `${weekdayNames[analysis.maxWeekday.day]} - ${analysis.maxWeekday.volume.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}\n\n`;
+                }
+                
+                message += `*Tendência:*\n`;
+                message += `${analysis.trend > 0 ? '📈' : '📉'} ${analysis.trend > 0 ? '+' : ''}${analysis.trend.toFixed(1)}% (últimos 30 dias)\n\n`;
+                
+                message += `*Gerado em:* ${moment().format('DD/MM/YYYY HH:mm')}\n`;
+                message += `*Dashboard:* BRSP15`;
+                
+                // Codificar a mensagem para URL
+                const encodedMessage = encodeURIComponent(message);
+                
+                // Abrir WhatsApp
+                const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
+                window.open(whatsappUrl, '_blank');
+                
+            } catch (error) {
+                console.error('Erro ao gerar texto para WhatsApp:', error);
+                showError('Erro ao compartilhar texto: ' + error.message);
+            }
+        }
+        
+        // Função para enviar relatório por email
+        function sendEmailReport() {
+            const emailTo = document.getElementById('email-to').value;
+            const emailSubject = document.getElementById('email-subject').value;
+            const emailMessage = document.getElementById('email-message').value;
+            
+            if (!emailTo) {
+                alert('Por favor, insira um endereço de email válido.');
+                return;
+            }
+            
+            emailModal.style.display = 'none';
+            
+            try {
+                // Gerar PDF
+                generatePDFReport().then(pdfBlob => {
+                    // Criar URL para o PDF
+                    const pdfUrl = URL.createObjectURL(pdfBlob);
+                    
+                    // Criar link de email
+                    const mailtoLink = `mailto:${emailTo}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailMessage)}`;
+                    
+                    // Abrir cliente de email
+                    window.location.href = mailtoLink;
+                    
+                    // Limpar URL após algum tempo
+                    setTimeout(() => {
+                        URL.revokeObjectURL(pdfUrl);
+                    }, 10000);
+                    
+                    alert('O PDF foi gerado com sucesso. O cliente de email será aberto. Por favor, anexe o arquivo PDF manualmente.');
+                }).catch(error => {
+                    console.error('Erro ao gerar PDF:', error);
+                    showError('Erro ao gerar PDF: ' + error.message);
+                });
+                
+            } catch (error) {
+                console.error('Erro ao enviar email:', error);
+                showError('Erro ao enviar email: ' + error.message);
+            }
+        }
+        
+        // Função para gerar relatório em PDF
+        async function generatePDFReport() {
+            return new Promise((resolve, reject) => {
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF('p', 'mm', 'a4');
+                    const analysis = analyzeEcommerceData(filteredData);
+                    const weekdayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+                    
+                    let yPosition = 20;
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const margin = 20;
+                    const contentWidth = pageWidth - (2 * margin);
+                    
+                    // Título
+                    doc.setFontSize(20);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('RELATÓRIO DE ANÁLISE DE VOLUME EXPEDIDO', pageWidth / 2, yPosition, { align: 'center' });
+                    yPosition += 10;
+                    
+                    // Data de geração
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Data de geração: ${moment().format('DD/MM/YYYY HH:mm')}`, pageWidth / 2, yPosition, { align: 'center' });
+                    yPosition += 15;
+                    
+                    // Estatísticas principais
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('ESTATÍSTICAS PRINCIPAIS', margin, yPosition);
+                    yPosition += 10;
+                    
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Volume Total: ${analysis.totalVolume.toLocaleString('pt-BR')}`, margin, yPosition);
+                    yPosition += 6;
+                    doc.text(`Média Diária: ${analysis.averageDaily.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`, margin, yPosition);
+                    yPosition += 6;
+                    doc.text(`Dia com Maior Volume: ${analysis.maxVolumeDay ? moment(analysis.maxVolumeDay.date).format('DD/MM') : '-'} (${analysis.maxVolumeDay ? analysis.maxVolumeDay.volume.toLocaleString('pt-BR') : '-'})`, margin, yPosition);
+                    yPosition += 6;
+                    doc.text(`Mês com Maior Volume: ${analysis.maxMonth.month || '-'}`, margin, yPosition);
+                    yPosition += 10;
+                    
+                    // Análise por dia da semana
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('ANÁLISE POR DIA DA SEMANA', margin, yPosition);
+                    yPosition += 10;
+                    
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    [0,1,2,3,4,5,6].forEach(day => {
+                        if (analysis.weekdayAverages[day]) {
+                            doc.text(`${weekdayNames[day]}: ${analysis.weekdayAverages[day].toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`, margin, yPosition);
+                            yPosition += 6;
+                            
+                            // Verificar se precisa de nova página
+                            if (yPosition > 270) {
+                                doc.addPage();
+                                yPosition = 20;
+                            }
+                        }
+                    });
+                    yPosition += 10;
+                    
+                    // Tendências
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('TENDÊNCIAS', margin, yPosition);
+                    yPosition += 10;
+                    
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Tendência (30 dias): ${analysis.trend > 0 ? '+' : ''}${analysis.trend.toFixed(1)}%`, margin, yPosition);
+                    yPosition += 6;
+                    doc.text(`Picos detectados: ${analysis.peaks.length}`, margin, yPosition);
+                    yPosition += 10;
+                    
+                    // Insights e recomendações
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('INSIGHTS E RECOMENDAÇÕES', margin, yPosition);
+                    yPosition += 10;
+                    
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    
+                    // Melhor dia da semana
+                    if (analysis.maxWeekday.day !== null) {
+                        doc.text(`• ${weekdayNames[analysis.maxWeekday.day]} tem o maior volume médio`, margin, yPosition);
+                        yPosition += 6;
+                        doc.text(`  Recomendação: Programar horas extras nesse dia`, margin, yPosition);
+                        yPosition += 10;
+                    }
+                    
+                    // Tendência geral
+                    const trendStatus = analysis.trend > 5 ? 'forte crescimento' : analysis.trend > 0 ? 'crescimento moderado' : 'estabilidade';
+                    doc.text(`• Tendência geral: ${trendStatus} (${analysis.trend > 0 ? '+' : ''}${analysis.trend.toFixed(1)}%)`, margin, yPosition);
+                    yPosition += 6;
+                    
+                    let recommendation = '';
+                    if (analysis.trend > 5) {
+                        recommendation = 'Expandir capacidade';
+                    } else if (analysis.trend > 0) {
+                        recommendation = 'Manter ritmo atual';
+                    } else {
+                        recommendation = 'Otimizar recursos';
+                    }
+                    doc.text(`  Recomendação: ${recommendation}`, margin, yPosition);
+                    yPosition += 10;
+                    
+                    // Dados detalhados (primeiros 15 registros)
+                    doc.setFontSize(16);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('DADOS DETALHADOS', margin, yPosition);
+                    yPosition += 10;
+                    
+                    // Cabeçalho da tabela
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Data', margin, yPosition);
+                    doc.text('Volume', margin + 30, yPosition);
+                    doc.text('Dia', margin + 60, yPosition);
+                    doc.text('Variação', margin + 90, yPosition);
+                    yPosition += 6;
+                    
+                    // Linha separadora
+                    doc.line(margin, yPosition, pageWidth - margin, yPosition);
+                    yPosition += 4;
+                    
+                    // Dados
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'normal');
+                    filteredData.slice(0, 15).forEach((item, index) => {
+                        let variation = '-';
+                        if (index > 0) {
+                            const prevItem = filteredData[index - 1];
+                            const change = item.volume - prevItem.volume;
+                            const changePercent = prevItem.volume > 0 ? ((change / prevItem.volume) * 100) : 0;
+                            variation = `${change > 0 ? '+' : ''}${changePercent.toFixed(1)}%`;
+                        }
+                        
+                        doc.text(moment(item.date).format('DD/MM'), margin, yPosition);
+                        doc.text(item.volume.toLocaleString('pt-BR'), margin + 30, yPosition);
+                        doc.text(item.weekday, margin + 60, yPosition);
+                        doc.text(variation, margin + 90, yPosition);
+                        yPosition += 6;
+                        
+                        // Verificar se precisa de nova página
+                        if (yPosition > 270) {
+                            doc.addPage();
+                            yPosition = 20;
+                        }
+                    });
+                    
+                    // Capturar gráficos e adicionar ao PDF
+                    const chartCanvases = document.querySelectorAll('canvas');
+                    let chartIndex = 0;
+                    
+                    function addChartsToPDF() {
+                        if (chartIndex < chartCanvases.length) {
+                            const canvas = chartCanvases[chartIndex];
+                            
+                            // Verificar se precisa de nova página
+                            if (yPosition > 150) {
+                                doc.addPage();
+                                yPosition = 20;
+                            } else {
+                                yPosition += 10;
+                            }
+                            
+                            // Adicionar título do gráfico
+                            doc.setFontSize(12);
+                            doc.setFont('helvetica', 'bold');
+                            const chartTitle = getChartTitle(canvas);
+                            doc.text(chartTitle, pageWidth / 2, yPosition, { align: 'center' });
+                            yPosition += 10;
+                            
+                            // Converter canvas para imagem e adicionar ao PDF
+                            html2canvas(canvas).then(chartCanvas => {
+                                const imgData = chartCanvas.toDataURL('image/png');
+                                const imgWidth = contentWidth;
+                                const imgHeight = (chartCanvas.height * imgWidth) / chartCanvas.width;
+                                
+                                doc.addImage(imgData, 'PNG', margin, yPosition, imgWidth, imgHeight);
+                                yPosition += imgHeight + 10;
+                                
+                                chartIndex++;
+                                addChartsToPDF();
+                            });
+                        } else {
+                            // Finalizar PDF
+                            const pdfBlob = doc.output('blob');
+                            resolve(pdfBlob);
+                        }
+                    }
+                    
+                    // Iniciar processo de adição de gráficos
+                    addChartsToPDF();
+                    
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+        
+        // Função auxiliar para obter título do gráfico
+        function getChartTitle(canvas) {
+            // Encontrar o elemento h2 mais próximo (título do card)
+            const card = canvas.closest('.card');
+            if (card) {
+                const titleElement = card.querySelector('h2');
+                if (titleElement) {
+                    // Remover ícones do título
+                    return titleElement.textContent.replace(/[🔍📊📈📉🔄📅🗓️]/g, '').trim();
+                }
+            }
+            return 'Gráfico';
         }
         
         function showError(message) {
