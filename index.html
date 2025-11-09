@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Análise de Volume - Ecommerce</title>
+    <title>Dashboard de Análise de Volume - Meli</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/locale/pt-br.js"></script>
@@ -677,7 +677,7 @@
                 <input type="file" id="file-input" accept=".csv">
             </div>
             <button id="download-report-btn" class="btn btn-success">
-                <i class="fas fa-download"></i> Baixar Relatório
+                <i class="fas fa-download"></i> Baixar Relatório PDF
             </button>
             <button id="whatsapp-btn" class="btn btn-whatsapp">
                 <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
@@ -686,7 +686,6 @@
                 <i class="fas fa-envelope"></i> Enviar por Email
             </button>
         </div>
-        
         
         <div id="error-message" class="error" style="display: none;">
             <i class="fas fa-exclamation-triangle"></i>
@@ -993,7 +992,7 @@
             <p>Escolha o formato para enviar o relatório:</p>
             <div class="modal-buttons">
                 <button id="whatsapp-image-btn" class="btn btn-whatsapp">
-                    <i class="fas fa-image"></i> Enviar como Imagem
+                    <i class="fas fa-image"></i> Enviar como Imagem (PNG)
                 </button>
                 <button id="whatsapp-text-btn" class="btn">
                     <i class="fas fa-file-alt"></i> Enviar como Texto
@@ -1087,7 +1086,7 @@
             yearFilter.addEventListener('change', applyFilters);
             sortColumnSelect.addEventListener('change', updateSorting);
             sortOrderSelect.addEventListener('change', updateSorting);
-            downloadReportBtn.addEventListener('click', downloadReport);
+            downloadReportBtn.addEventListener('click', downloadReportAsPDF);
             whatsappBtn.addEventListener('click', () => whatsappModal.style.display = 'flex');
             emailBtn.addEventListener('click', () => emailModal.style.display = 'flex');
             whatsappImageBtn.addEventListener('click', shareViaWhatsAppImage);
@@ -1341,7 +1340,18 @@
 31/10/2025,39357
 01/11/2025,33519
 02/11/2025,27605
-03/11/2025,52288`;
+03/11/2025,52288
+04/11/2025,56795,3,Terça,,,,,,,,,,,,,,,,
+05/11/2025,59832,4,Quarta,,,,,,,,,,,,,,,,
+06/11/2025,51156,5,Quinta,,,,,,,,,,,,,,,,
+07/11/2025,53415,6,Sexta,,,,,,,,,,,,,,,,
+08/11/2025,,7,Sabado,,,,,,,,,,,,,,,,
+09/11/2025,,1,Domingo,,,,,,,,,,,,,,,,
+10/11/2025,,2,Segunda,,,,,,,,,,,,,,,,
+11/11/2025,,3,Terça,,,,,,,,,,,,,,,,
+12/11/2025,,4,Quarta,,,,,,,,,,,,,,,,
+13/11/2025,,5,Quinta,,,,,,,,,,,,,,,`;
+
                 
                 allData = processCSVData(csvData);
                 populateYearFilter();
@@ -2600,97 +2610,77 @@
             });
         }
         
-        // Função para baixar relatório completo
-        function downloadReport() {
+        // CORREÇÃO: Função para baixar relatório como PDF
+        function downloadReportAsPDF() {
             try {
-                // Criar um resumo do relatório
-                const analysis = analyzeEcommerceData(filteredData);
-                const weekdayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-                
-                let reportContent = `RELATÓRIO DE ANÁLISE DE VOLUME EXPEDIDO\n`;
-                reportContent += `Data de geração: ${moment().format('DD/MM/YYYY HH:mm')}\n\n`;
-                
-                // Estatísticas principais
-                reportContent += `ESTATÍSTICAS PRINCIPAIS:\n`;
-                reportContent += `Volume Total: ${analysis.totalVolume.toLocaleString('pt-BR')}\n`;
-                reportContent += `Média Diária: ${analysis.averageDaily.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}\n`;
-                reportContent += `Dia com Maior Volume: ${analysis.maxVolumeDay ? moment(analysis.maxVolumeDay.date).format('DD/MM') : '-'} (${analysis.maxVolumeDay ? analysis.maxVolumeDay.volume.toLocaleString('pt-BR') : '-'})\n`;
-                reportContent += `Mês com Maior Volume: ${analysis.maxMonth.month || '-'}\n\n`;
-                
-                // Análise por dia da semana
-                reportContent += `ANÁLISE POR DIA DA SEMANA:\n`;
-                [0,1,2,3,4,5,6].forEach(day => {
-                    if (analysis.weekdayAverages[day]) {
-                        reportContent += `${weekdayNames[day]}: ${analysis.weekdayAverages[day].toLocaleString('pt-BR', { maximumFractionDigits: 0 })}\n`;
-                    }
-                });
-                reportContent += `\n`;
-                
-                // Tendências
-                reportContent += `TENDÊNCIAS:\n`;
-                reportContent += `Tendência (30 dias): ${analysis.trend > 0 ? '+' : ''}${analysis.trend.toFixed(1)}%\n`;
-                reportContent += `Picos detectados: ${analysis.peaks.length}\n\n`;
-                
-                // Dados detalhados (primeiros 20 registros)
-                reportContent += `DADOS DETALHADOS (primeiros 20 registros):\n`;
-                reportContent += `Data\t\tVolume\t\tDia da Semana\tVariação\n`;
-                filteredData.slice(0, 20).forEach((item, index) => {
-                    let variation = '-';
-                    if (index > 0) {
-                        const prevItem = filteredData[index - 1];
-                        const change = item.volume - prevItem.volume;
-                        const changePercent = prevItem.volume > 0 ? ((change / prevItem.volume) * 100) : 0;
-                        variation = `${change > 0 ? '+' : ''}${changePercent.toFixed(1)}%`;
-                    }
+                // Gerar PDF
+                generatePDFReport().then(pdfBlob => {
+                    // Criar URL para o PDF
+                    const pdfUrl = URL.createObjectURL(pdfBlob);
                     
-                    reportContent += `${moment(item.date).format('DD/MM')}\t\t${item.volume.toLocaleString('pt-BR')}\t\t${item.weekday}\t\t${variation}\n`;
+                    // Criar link para download
+                    const link = document.createElement('a');
+                    link.href = pdfUrl;
+                    link.download = `relatorio_volume_expedido_${moment().format('YYYY-MM-DD')}.pdf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Limpar URL após algum tempo
+                    setTimeout(() => {
+                        URL.revokeObjectURL(pdfUrl);
+                    }, 10000);
+                    
+                }).catch(error => {
+                    console.error('Erro ao gerar PDF:', error);
+                    showError('Erro ao gerar PDF: ' + error.message);
                 });
-                
-                // Criar arquivo e fazer download
-                const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `relatorio_volume_expedido_${moment().format('YYYY-MM-DD')}.txt`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
                 
             } catch (error) {
-                console.error('Erro ao gerar relatório:', error);
-                showError('Erro ao gerar relatório: ' + error.message);
+                console.error('Erro ao baixar relatório:', error);
+                showError('Erro ao baixar relatório: ' + error.message);
             }
         }
         
-        // Função para compartilhar via WhatsApp como imagem
+        // CORREÇÃO: Função para compartilhar via WhatsApp como imagem (PNG)
         function shareViaWhatsAppImage() {
             whatsappModal.style.display = 'none';
             
             try {
                 // Capturar o dashboard como imagem
                 html2canvas(document.getElementById('dashboard')).then(canvas => {
-                    // Converter canvas para imagem
-                    const image = canvas.toDataURL('image/png');
+                    // Converter canvas para imagem PNG
+                    const imageDataUrl = canvas.toDataURL('image/png');
                     
-                    // Criar link para WhatsApp
+                    // Criar link para download da imagem
+                    const link = document.createElement('a');
+                    link.href = imageDataUrl;
+                    link.download = `relatorio_volume_${moment().format('YYYY-MM-DD')}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Criar mensagem para WhatsApp
                     const analysis = analyzeEcommerceData(filteredData);
-                    const message = `Relatório de Análise de Volume Expedido\nVolume Total: ${analysis.totalVolume.toLocaleString('pt-BR')}\nMédia Diária: ${analysis.averageDaily.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}\nGerado em: ${moment().format('DD/MM/YYYY HH:mm')}`;
+                    const message = `📊 Relatório de Análise de Volume Expedido\n\n` +
+                                   `📦 Volume Total: ${analysis.totalVolume.toLocaleString('pt-BR')}\n` +
+                                   `📈 Média Diária: ${analysis.averageDaily.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}\n` +
+                                   `📅 Gerado em: ${moment().format('DD/MM/YYYY HH:mm')}\n\n` +
+                                   `A imagem do relatório foi baixada. Anexe-a manualmente ao WhatsApp.`;
                     
                     // Codificar a mensagem para URL
                     const encodedMessage = encodeURIComponent(message);
                     
-                    // Abrir WhatsApp com a imagem
+                    // Abrir WhatsApp
                     const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
                     window.open(whatsappUrl, '_blank');
                     
-                    // Nota: Para realmente enviar a imagem, seria necessário um servidor
-                    // para hospedar a imagem, pois o WhatsApp Web não permite enviar
-                    // imagens diretamente via URL de dados (data URL)
-                    alert('Para enviar a imagem, salve-a primeiro e depois anexe manualmente no WhatsApp.');
+                }).catch(error => {
+                    console.error('Erro ao gerar imagem:', error);
+                    showError('Erro ao gerar imagem: ' + error.message);
                 });
             } catch (error) {
-                console.error('Erro ao gerar imagem para WhatsApp:', error);
+                console.error('Erro ao compartilhar imagem:', error);
                 showError('Erro ao compartilhar imagem: ' + error.message);
             }
         }
